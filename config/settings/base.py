@@ -76,6 +76,7 @@ DJANGO_APPS = [
     # "django.contrib.humanize", # Handy template tags
     "django.contrib.admin",
     "django.forms",
+    'widget_tweaks',
 ]
 THIRD_PARTY_APPS = [
     "crispy_forms",
@@ -83,10 +84,12 @@ THIRD_PARTY_APPS = [
     "allauth",
     "allauth.account",
     "allauth.socialaccount",
+    "rest_framework",
 ]
 
 LOCAL_APPS = [
-    "jsb_web.users",
+    "jsb_web.users.apps.UsersConfig",
+    "jsb_web.leases.apps.LeasesConfig",
     # Your stuff: custom apps go here
 ]
 # https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
