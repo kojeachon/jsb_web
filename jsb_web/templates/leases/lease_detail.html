@@ -1,0 +1,138 @@
+{% extends "leases/base2.html" %}
+{% load static %}
+{% block content %}
+
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-10">
+                <div class="card card-primary">
+                    <div class="card-header">
+                        <div class="row-vw d-flex">
+                            <div class="item"><h3 class="card-title">예약 정보</h3></div>
+                            <div class="item ml-auto">
+                                <a href="{% url 'leases:lease_edit' lease.id %}">
+                                    <button type="button" class="btn btn-info">수정하기</button>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <!-- Date -->
+                        <div class="form-group row">
+                            <label for="roomnumber" class="col-sm-2 col-form-label">상태 : </label>
+                            <div id="roomnumber" class="col-sm-10">
+                                {{ lease.state }}
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="roomnumber" class="col-sm-2 col-form-label">예약일정 : </label>
+                            <div id="roomnumber" class="col-sm-10">
+                                {{ lease.st_date|date:'Y-m-d' }} ~ {{ lease.ed_date|date:'Y-m-d' }}
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="roomnumber" class="col-sm-2 col-form-label">호실 : </label>
+                            <div id="roomnumber" class="col-sm-10">
+                                {{ lease.room.roomnumber }}
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="inputEmail3" class="col-sm-2 col-form-label">사용 예정 인원 : </label>
+                            <div class="col-sm-10">
+                                {{ lease.usepeople }}
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="inputEmail3" class="col-sm-2 col-form-label">예약자(연락처) : </label>
+                            <div class="col-sm-10">
+                                {{ lease.leasename }}({{ lease.phonenumber }})
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="inputEmail3" class="col-sm-2 col-form-label">예약일 : </label>
+                            <div class="col-sm-10">
+                                {{ lease.created_at|date:'Y-m-d H:i' }}
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="inputEmail3" class="col-sm-2 col-form-label">메모 : </label>
+                            <div class="col-sm-10">
+                                {{ lease.contents }}
+                            </div>
+                        </div>
+
+                        <div class="clear"></div>
+                      <!-- /.form group -->
+                    </div>
+                    <div class="card-footer">
+                        Card Footer
+                    </div>
+                <!-- /.card-body -->
+                </div>
+
+                <div class="card card-primary">
+                    <div class="card-header">
+                      <h3 class="card-title">방 정보</h3>
+                    </div>
+                    <div class="card-body">
+                        <!-- Date -->
+                        <div class="form-group row">
+                            <label for="roomnumber" class="col-sm-2 col-form-label">호실 : </label>
+                            <div id="roomnumber" class="col-sm-10">
+                                {{ lease.room.roomnumber }}
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="type1" class="col-sm-2 col-form-label">유형1 : </label>
+                            <div id="type1" class="col-sm-10">
+                                {{ lease.room.type1 }}
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="inputEmail3" class="col-sm-2 col-form-label">유형2 : </label>
+                            <div class="col-sm-10">
+                                {{ lease.room.type2 }}
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="inputEmail3" class="col-sm-2 col-form-label">최대 수용인원 : </label>
+                            <div class="col-sm-10">
+                                {{ lease.room.roompeople }}
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="inputEmail3" class="col-sm-2 col-form-label">금액 : </label>
+                            <div class="col-sm-10">
+                                {{ lease.room.roommoney }}
+                            </div>
+                        </div>
+                        {% if lease.room.image %}
+                        <div class="post-full-width">
+                            <img src="{{ lease.image.url }}" alt="">
+                        </div>
+                        {% endif %}
+
+                        <div class="clear"></div>
+                      <!-- /.form group -->
+                    </div>
+                    <div class="card-footer">
+                        Card Footer
+                    </div>
+                <!-- /.card-body -->
+                </div>
+
+            </div>
+        </div>
+
+
+    </div>
+</section>
+
+
+{% endblock content %}
+
+{% block script %}
+
+
+{% endblock script%}

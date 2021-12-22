@@ -1,0 +1,277 @@
+{% extends "leases/base2.html" %}
+
+{% block content %}
+<!-- Content Header (Page header) -->
+<section class="content-header">
+  <div class="container-fluid">
+    <div class="row mb-2">
+      <div class="col-sm-6">
+        <h1>월별 예약 관리</h1> superuser: {{ user.is_superuser }} , is_authenticated : {{ user.is_authenticated }}
+      </div>
+      <div class="col-sm-6">
+        <!-- <form id="leaseForm" class="mt-5" action="{% url 'leases:lease_create'%}">
+          {% csrf_token %} -->
+          <div class="form-group mb-0">
+            <div class="input-group date">
+              <label class="input-group-append">유형1</label>
+              <select class="input-group-append ml-2" name="type1" id="type1" style="width: 10%;">
+                <option selected="selected">선택</option>
+              </select>
+              <label class="input-group-append ml-3">유형2:</label>
+              <select class="input-group-append ml-2" name="type2" id="type2" style="width: 20%;">
+                  <option selected="selected">선택</option>
+              </select>
+              <div class="input-group-append">
+                <button type="submit" id="lease_search" class="btn btn-sm btn-default">
+                    <i class="fa fa-search"></i>
+                </button>
+              </div>
+              <ol class="input-group-append breadcrumb float-sm-right ml-5">
+                <li class="breadcrumb-item">
+                  <a href="{% url 'leases:lease_create' %}">예약추가</a>
+                </li>
+              </ol>
+            </div>            
+          </div>
+        <!-- </form> -->
+
+      </div>
+    </div>
+  </div><!-- /.container-fluid -->
+</section>
+
+<!-- Main content -->
+<section class="content">
+  <div class="container-fluid">
+    <div class="row">
+      <!-- /.col -->
+      <div class="col-md-12">
+        <div class="card card-primary">
+          <div class="card-body p-0">
+            <!-- THE CALENDAR -->
+            <div id="calendar"></div>
+          </div>
+          <!-- /.card-body -->
+        </div>
+        <!-- /.card -->
+      </div>
+      <!-- /.col -->
+    </div>
+    <!-- /.row -->
+  </div><!-- /.container-fluid -->
+</section>
+<!-- /.content -->
+
+{% endblock content %}
+
+{% block script %}
+  <script>
+    $(function () {
+
+      function calendar_dataget(){
+        var type1 = $("#type1").val()
+        var type2 = $("#type2").val()
+        var datec = calendar.getDate();
+        // console.log("type1=",type1,"type2=",type2,"datec=",datec,"Year=",datec.getFullYear(),"Month=",datec.getMonth(),datec.getDay())
+        $.ajax({
+          // 'csrfmiddlewaretoken': csrf[0].value,
+          url: `/leases/leases-json/`,
+          type: 'GET',
+          dataType: 'json',
+          data: {
+            datec : datec,
+            type1 : type1,
+            type2 : type2,
+          },
+          success: function(response){
+            calendar.removeAllEvents();
+            const resdata = response.data
+            var eventsdata = []
+            resdata.forEach(element => {
+              var dictObject = {}
+              dictObject["title"] = element.room.roomnumber+"("+element.leasename+")"
+              dictObject["start"] = new Date(element.st_date)
+              dictObject["end"] = new Date(element.ed_date)
+              dictObject["url"] = '/leases/lease/'+element.id
+              dictObject["backgroundColor"] = '#f56954'
+              dictObject["borderColor"] = '#f56954'
+              dictObject["allDay"] = true
+              calendar.addEvent(dictObject)
+              // console.log(dictObject)
+            })
+          }
+        })
+      }
+  
+      // 유형1 select 생성
+      const type1select = document.getElementById('type1')
+      $.ajax({
+        type: 'GET',
+        url: '/leases/type1-json/',
+        success: function(response){
+            const type1Data = response.data
+            type1Data.forEach(element => {
+              const type1option = document.createElement('option')
+              type1option.text = element.type1
+              type1option.setAttribute('value', element.type1)
+              type1select.appendChild(type1option)
+            });
+        },
+        error: function(error){
+            console.log(error)
+        }
+      })
+
+      const type2select = document.getElementById('type2')
+      type1select.addEventListener('change', e=>{
+        // console.log(e.target.value)
+        const selectedtype1 = e.target.value
+
+        // alertBox.innerHTML=""
+        type2select.innerHTML = ""
+        const type2option = document.createElement('option')
+        type2option.text = "선택"
+        type2option.setAttribute('selected','')
+        type2select.appendChild(type2option)
+
+        $.ajax({
+          type: 'GET',
+          url: `/leases/type2-json/${selectedtype1}/`,
+          success: function(response){
+              const type2Data = response.data
+              type2Data.forEach(element => {
+                const type2option = document.createElement('option')
+                type2option.text = element.type2
+                type2option.setAttribute('value', element.type2)
+                type2select.appendChild(type2option)
+              });
+          },
+          error: function(error){
+              console.log(error)
+          }
+        })
+      })
+
+      var eventsdata = []
+      {% for post in posts %}
+        var st_date = new Date('{{post.st_date}}')
+        var ed_date = new Date('{{post.ed_date}}')
+        var sd = st_date.getDate(), sm = st_date.getMonth(),sy = st_date.getFullYear()
+        var ed = ed_date.getDate(),em = ed_date.getMonth(),ey = ed_date.getFullYear()
+        var dictObject = {}
+        dictObject["title"] = '{{ post.room.roomnumber }}({{ post.leasename }})'
+        dictObject["start"] = new Date(sy, sm, sd)
+        dictObject["end"] = new Date(ey, em, ed+1)
+        dictObject["url"] = '/leases/lease/{{ post.id }}'
+        dictObject["backgroundColor"] = '#f56954'
+        dictObject["borderColor"] = '#f56954'
+        dictObject["allDay"] = true
+        eventsdata.push(dictObject)
+      {% endfor %}
+      // console.log(eventsdata)
+  
+      /* initialize the calendar
+      -----------------------------------------------------------------*/
+      //Date for the calendar events (dummy data)
+      var date = new Date()
+      var d    = date.getDate(),
+          m    = date.getMonth(),
+          y    = date.getFullYear()
+  
+      var Calendar = FullCalendar.Calendar;
+  
+      var calendarEl = document.getElementById('calendar');
+    
+      var calendar = new Calendar(calendarEl, {
+        buttonText: {
+          today:    '오늘',
+          month:    '월별',
+          week:     '주별',
+          day:      '일별',
+          list:     '리스트'
+        },
+        headerToolbar: {
+          left  : 'prev,next today',
+          center: 'title',
+          right : 'dayGridMonth,timeGridWeek,timeGridDay'
+        },
+        themeSystem: 'bootstrap',
+        events : eventsdata,
+        // eventSources: [{
+        //   events: function(info, successCallback, failureCallback) {
+        //     $.ajax({
+        //       url: `/leases/leases-json/`,
+        //       type: 'GET',
+        //       dataType: 'json',
+        //       success: function(response){
+        //         const resdata = response.data
+        //         var eventsdata = []
+        //         resdata.forEach(element => {
+        //           // console.log(element)
+        //           var dictObject = {}
+        //           dictObject["title"] = element.room.roomnumber+"("+element.leasename+")"
+        //           dictObject["start"] = new Date(element.st_date)
+        //           dictObject["end"] = new Date(element.ed_date)
+        //           dictObject["url"] = '/leases/lease/'+element.id
+        //           dictObject["backgroundColor"] = '#f56954'
+        //           dictObject["borderColor"] = '#f56954'
+        //           dictObject["allDay"] = true
+        //           eventsdata.push(dictObject)
+        //         })
+        //         successCallback(eventsdata)
+        //       }
+        //     })
+        //   }
+        // }],
+        editable  : false,
+        droppable : false, // this allows things to be dropped onto the calendar !!!
+        
+        
+
+        eventDidMount: function(info) {
+          // console.log("eventDidMount = ",info.event.title,info.event,info);
+          // {description: "Lecture", department: "BioChemistry"}
+        },
+        eventWillUnmount: function(info) {
+          // console.log("eventWillUnmount = ",info.event.title);
+          // console.log("eventWillUnmount : ",info.view,
+          // "activeEnd=",info.view.activeEnd,
+          // "activeStart=",info.view.activeStart,
+          // "currentEnd=",info.view.currentEnd,
+          // "currentStart=",info.view.currentStart,
+          // "title=",info.view.title);
+          // {description: "Lecture", department: "BioChemistry"}
+        },
+
+        height: 650,
+
+        // eventRender: function(info) {
+        //   var tooltip = new Tooltip(info.el, {
+        //     title: info.event.extendedProps.description,
+        //   }
+        // },
+        
+      });  
+      calendar.render();
+      // calendar_dataget();
+
+      $("#lease_search").click(function(e){
+        calendar_dataget(calendar)
+      })
+
+      $(":button[aria-label='prev']").click(function(e){
+        calendar_dataget(calendar)
+      })
+      $(":button[aria-label='next']").click(function(e){
+        calendar_dataget(calendar)
+      })
+
+      // $('#calendar').fullCalendar()
+    })
+
+  
+
+
+
+  </script>
+{% endblock script%}

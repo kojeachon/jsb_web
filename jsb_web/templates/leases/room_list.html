@@ -1,0 +1,119 @@
+{% extends "leases/base2.html" %}
+{% load static %}
+
+{% block content %}
+<!-- Content Header (Page header) -->
+<section class="content-header">
+  <div class="container-fluid">
+    <div class="row mb-2">
+      <div class="col-sm-6">
+        <h1>Room 리스트</h1>
+      </div>
+    </div>
+  </div><!-- /.container-fluid -->
+</section>
+
+<!-- Main content -->
+<section class="content">
+  <div class="container-fluid">
+    <div class="row">
+      <!-- /.col -->
+      <div class="col-md-12">
+        
+        <div class="card">
+            <!-- /.card-header -->
+            <div class="card-body">
+                <table id="example2" class="table table-bordered table-hover">
+                <thead>
+                <tr>
+                    <th>호실</th>
+                    <th>유형1</th>
+                    <th>유형2</th>
+                    <th>최대 수용인원</th>
+                    <th>금액</th>
+                    <th>이미지</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for room in page_obj %}
+                    <tr>
+                        <td><a href="{% url 'leases:room_detail' room.id %}">{{ room.roomnumber|upper }}</a></td> 
+                        <td>{{ room.type1 }}</td>
+                        <td>{{ room.type2 }}</td>
+                        <td>{{ room.roompeople }}</td>
+                        <td>{{ room.roommoney }}</td>
+                        <td>{% if room.image %} <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-columns" viewBox="0 0 16 16">
+                            <path d="M0 2a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H1a1 1 0 0 1-1-1V2zm8.5 0v8H15V2H8.5zm0 9v3H15v-3H8.5zm-1-9H1v3h6.5V2zM1 14h6.5V6H1v8z"/>
+                          </svg> {% endif %}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+                </table>
+                <div class="d-grid gap-2 d-md-flex justify-content-md-center">
+                    <div class="pagination">
+                        <span class="step-links">
+                            {% if page_obj.has_previous %}
+                                <a href="?page=1"><button type="button" class="btn btn-secondary">처음</button></a>
+                                <a href="?page={{ page_obj.previous_page_number }}"><button type="button" class="btn btn-secondary">이전</button></a>
+                            {% endif %}
+                    
+                            <span class="current">
+                                Page {{ page_obj.number }} / Total {{ page_obj.paginator.num_pages }}
+                            </span>
+                    
+                            {% if page_obj.has_next %}
+                                <a href="?page={{ page_obj.next_page_number }}"><button type="button" class="btn btn-secondary">다음</button></a>
+                                <a href="?page={{ page_obj.paginator.num_pages }}"><button type="button" class="btn btn-secondary">마지막</button></a>
+                            {% endif %}
+                        </span>
+                    </div>
+                </div>
+
+
+            </div>
+            <!-- /.card-body -->
+          </div>
+          
+        <!-- /.card -->
+      </div>
+      <!-- /.col -->
+    </div>
+    <!-- /.row -->
+  </div><!-- /.container-fluid -->
+</section>
+<!-- /.content -->
+
+{% endblock content %}
+
+{% block script %}
+<!-- DataTables  & Plugins -->
+    <script src="{% static 'plugins/datatables/jquery.dataTables.min.js' %}"></script>
+    <script src="{% static 'plugins/datatables-bs4/js/dataTables.bootstrap4.min.js' %}"></script>
+    <script src="{% static 'plugins/datatables-responsive/js/dataTables.responsive.min.js' %}"></script>
+    <script src="{% static 'plugins/datatables-responsive/js/responsive.bootstrap4.min.js' %}"></script>
+    <script src="{% static 'plugins/datatables-buttons/js/dataTables.buttons.min.js' %}"></script>
+    <script src="{% static 'plugins/datatables-buttons/js/buttons.bootstrap4.min.js' %}"></script>
+    <script src="{% static 'plugins/jszip/jszip.min.js' %}"></script>
+    <script src="{% static 'plugins/pdfmake/pdfmake.min.js' %}"></script>
+    <script src="{% static 'plugins/pdfmake/vfs_fonts.js' %}"></script>
+    <script src="{% static 'plugins/datatables-buttons/js/buttons.html5.min.js' %}"></script>
+    <script src="{% static 'plugins/datatables-buttons/js/buttons.print.min.js' %}"></script>
+    <script src="{% static 'plugins/datatables-buttons/js/buttons.colVis.min.js' %}"></script>
+  <!-- <script>
+    $(function () {
+
+        $('#example2').DataTable({
+            "paging": true,
+            "lengthChange": false,
+            "searching": false,
+            "ordering": true,
+            "info": true,
+            "autoWidth": false,
+            "responsive": true,
+        });
+
+        // console.log(eventsdata)
+  
+    })
+  </script> -->
+{% endblock script%}

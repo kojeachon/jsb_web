@@ -1,0 +1,113 @@
+{% extends "leases/base2.html" %}
+{% load static %}
+{% block content %}
+
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-10">
+                <div class="card card-primary">
+                    <div class="card-header">
+                      <h3 class="card-title">ROOM 추가</h3>
+                    </div>
+                    <div class="card-body">
+                        <div id="alert-box"></div>
+                        <!-- Date -->
+                        <form id="leaseForm" class="mt-5" action="{% url 'leases:room_create'%}" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            
+                            <div class="form-group">
+                                <label>호실:</label>
+                                <select class="form-control select2" name="roomnumber" id="roomnumber" style="width: 100%;">
+                                    <option selected="selected">선택</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label>유형1:</label>
+                                <select class="form-control select2" name="type1" id="type1" style="width: 100%;">
+                                    <option selected="selected">선택</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>유형2:</label>
+                                <select class="form-control select2" name="type2" id="type2" style="width: 100%;">
+                                    <option selected="selected">선택</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="usepeople">최대 수용인원:</label>
+                                <input type="text" class="form-control" name="usepeople" id="usepeople" placeholder="최대 수용인원">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="usepeople">금액:</label>
+                                <input type="text" class="form-control" name="roommoney" id="roommoney" placeholder="금액">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>메모</label>
+                                <textarea class="form-control" rows="3" name="contents" id="contents" placeholder="메모"></textarea>
+                            </div>
+                            
+                            <div class="form-group text-center">
+                                <button type="submit" class="btn btn-primary">Submit</button>
+                            </div>
+                        </form>
+
+                      <!-- /.form group -->
+                    </div>
+                    <div class="card-footer">
+                        Card Footer
+                    </div>
+                <!-- /.card-body -->
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+</section>
+
+
+<form action="{% url 'leases:room_create'%}"
+method="post"
+enctype="multipart/form-data">
+{% csrf_token %}
+{{ form.as_p }}
+<input type="submit" value="Create">
+</form>
+
+
+
+{% endblock content %}
+
+{% block script %}
+
+
+<script src="{% static 'js/leases/main.js' %}" defer></script>
+
+{% endblock script%}
+
+
+
+
+<!-- Here is leases room_create.html
+
+<div class="post-create">
+    <div>
+        Create Room
+    </div>
+
+    <div class="form">
+        <form action="{% url 'leases:room_create'%}"
+                method="post"
+                enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <input type="submit" value="Create">
+        </form>
+    </div>
+</div> -->

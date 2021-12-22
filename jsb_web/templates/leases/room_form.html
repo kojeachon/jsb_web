@@ -1,0 +1,60 @@
+{% extends "leases/base2.html" %}
+{% load static %}
+{% block content %}
+
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-10">
+                <div class="card card-primary">
+                    <div class="card-header">
+                      <h3 class="card-title">ROOM 추가</h3>
+                      {% load widget_tweaks %}
+                    </div>
+                    <div class="card-body">
+                        <div id="alert-box"></div>
+                        <!-- Date -->
+                        <form action="" method="POST" enctype="multipart/form-data">
+                            {% csrf_token %}
+
+                            {% for field in form.visible_fields %}
+                            <div class="form-group">
+                                <label for={{ field.id_for_label }}>{{ field.label }}</label>
+                                {{ field|add_class:'form-control' }}
+                                {% for error in field.errors %}
+                                <span class="help-block">{{ error }}</span>
+                                {% endfor %}
+                            </div>
+                            {% endfor %}
+
+                            <!-- <table>
+                                {{ form.as_table }}
+                            </table> -->
+                            <!-- <input class="button" type="submit" value="작성 완료"> -->
+                            <div class="d-grid gap-2 d-md-flex justify-content-md-center">
+                                <button type="submit" class="btn btn-primary">작성 완료</button>
+                            </div>
+                            
+                        </form>
+
+                      <!-- /.form group -->
+                    </div>
+                    <div class="card-footer">
+                        Card Footer
+                    </div>
+                <!-- /.card-body -->
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+</section>
+
+
+{% endblock content %}
+
+{% block script %}
+
+
+{% endblock script%}

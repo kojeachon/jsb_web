@@ -1,0 +1,194 @@
+{% extends "leases/base2.html" %}
+{% load static %}
+
+{% block content %}
+<!-- Content Header (Page header) -->
+<section class="content-header">
+  <div class="container-fluid">
+    <div class="row mb-2">
+      <div class="col-sm-6">
+        <h1>예약 리스트</h1>
+      </div>
+      <div class="col-sm-6">
+        <form method="get" action="{% url 'leases:leaselist' %}">
+          {% csrf_token %}
+          <div class="form-group mb-0">
+            <div class="input-group date">
+              <label class="input-group-append">유형1</label>
+              <select class="input-group-append ml-2" name="type1" id="type1" style="width: 10%;">
+                <option selected="selected">선택</option>
+              </select>
+              <label class="input-group-append ml-3">유형2:</label>
+              <select class="input-group-append ml-2" name="type2" id="type2" style="width: 20%;">
+                  <option selected="selected">선택</option>
+              </select>
+              <div class="input-group-append">
+                <button type="submit" id="lease_search" class="btn btn-sm btn-default">
+                    <i class="fa fa-search"></i>
+                </button>
+              </div>
+              <ol class="input-group-append breadcrumb float-sm-right ml-5">
+                <li class="breadcrumb-item">
+                  <a href="{% url 'leases:lease_create' %}">예약추가</a>
+                </li>
+              </ol>
+            </div>            
+          </div>
+        </form>
+      </div>
+    </div>
+  </div><!-- /.container-fluid -->
+</section>
+
+<!-- Main content -->
+<section class="content">
+  <div class="container-fluid">
+    <div class="row">
+      <!-- /.col -->
+      <div class="col-md-12">
+        
+        <div class="card">
+            <!-- /.card-header -->
+            <div class="card-body">
+                <table id="example2" class="table table-bordered table-hover">
+                <thead>
+                <tr>
+                    <th>예약일자</th>
+                    <th>유형1</th>
+                    <th>유형2</th>
+                    <th>호실</th>
+                    <th>수용가능인원</th>
+                    <th>금액</th>
+                    <th>예약인원</th>
+                    <th>예약자명</th>
+                    <th>연락처</th>
+                    <th>상태</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for lease in page_obj %}
+                    <tr>
+                        <td><a href="{% url 'leases:lease_detail' lease.id %}">{{ lease.st_date|date:'Y-m-d' }} ~ {{ lease.ed_date|date:'Y-m-d' }}</a></td> 
+                        <td>{{ lease.room.type1 }}</td>
+                        <td>{{ lease.room.type2 }}</td>
+                        <td>{{ lease.room.roomnumber }}</td>
+                        <td>{{ lease.room.roompeople }}</td>
+                        <td>{{ lease.room.roommoney }}</td>
+                        <td>{{ lease.usepeople }}</td>
+                        <td>{{ lease.leasename }}</td>
+                        <td>{{ lease.phonenumber }}</td>
+                        <td>{{ lease.state }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+                </table>
+                <div class="d-grid gap-2 d-md-flex justify-content-md-center">
+                    <div class="pagination">
+                        <span class="step-links">
+                            {% if page_obj.has_previous %}
+                                <a href="?page=1"><button type="button" class="btn btn-secondary">처음</button></a>
+                                <a href="?page={{ page_obj.previous_page_number }}"><button type="button" class="btn btn-secondary">이전</button></a>
+                            {% endif %}
+                    
+                            <span class="current">
+                                Page {{ page_obj.number }} / Total {{ page_obj.paginator.num_pages }}
+                            </span>
+                    
+                            {% if page_obj.has_next %}
+                                <a href="?page={{ page_obj.next_page_number }}"><button type="button" class="btn btn-secondary">다음</button></a>
+                                <a href="?page={{ page_obj.paginator.num_pages }}"><button type="button" class="btn btn-secondary">마지막</button></a>
+                            {% endif %}
+                        </span>
+                    </div>
+                </div>
+
+
+            </div>
+            <!-- /.card-body -->
+          </div>
+          
+        <!-- /.card -->
+      </div>
+      <!-- /.col -->
+    </div>
+    <!-- /.row -->
+  </div><!-- /.container-fluid -->
+</section>
+<!-- /.content -->
+
+{% endblock content %}
+
+{% block script %}
+<!-- DataTables  & Plugins -->
+    <script src="{% static 'plugins/datatables/jquery.dataTables.min.js' %}"></script>
+    <script src="{% static 'plugins/datatables-bs4/js/dataTables.bootstrap4.min.js' %}"></script>
+    <script src="{% static 'plugins/datatables-responsive/js/dataTables.responsive.min.js' %}"></script>
+    <script src="{% static 'plugins/datatables-responsive/js/responsive.bootstrap4.min.js' %}"></script>
+    <script src="{% static 'plugins/datatables-buttons/js/dataTables.buttons.min.js' %}"></script>
+    <script src="{% static 'plugins/datatables-buttons/js/buttons.bootstrap4.min.js' %}"></script>
+    <script src="{% static 'plugins/jszip/jszip.min.js' %}"></script>
+    <script src="{% static 'plugins/pdfmake/pdfmake.min.js' %}"></script>
+    <script src="{% static 'plugins/pdfmake/vfs_fonts.js' %}"></script>
+    <script src="{% static 'plugins/datatables-buttons/js/buttons.html5.min.js' %}"></script>
+    <script src="{% static 'plugins/datatables-buttons/js/buttons.print.min.js' %}"></script>
+    <script src="{% static 'plugins/datatables-buttons/js/buttons.colVis.min.js' %}"></script>
+  
+  <script>
+    $(function () {
+
+      // 유형1 select 생성
+      const type1select = document.getElementById('type1')
+      $.ajax({
+        type: 'GET',
+        url: '/leases/type1-json/',
+        success: function(response){
+            const type1Data = response.data
+            type1Data.forEach(element => {
+              const type1option = document.createElement('option')
+              type1option.text = element.type1
+              type1option.setAttribute('value', element.type1)
+              type1select.appendChild(type1option)
+            });
+        },
+        error: function(error){
+            console.log(error)
+        }
+      })
+
+      const type2select = document.getElementById('type2')
+      type1select.addEventListener('change', e=>{
+        // console.log(e.target.value)
+        const selectedtype1 = e.target.value
+
+        // alertBox.innerHTML=""
+        type2select.innerHTML = ""
+        const type2option = document.createElement('option')
+        type2option.text = "선택"
+        type2option.setAttribute('selected','')
+        type2select.appendChild(type2option)
+
+        $.ajax({
+          type: 'GET',
+          url: `/leases/type2-json/${selectedtype1}/`,
+          success: function(response){
+              const type2Data = response.data
+              type2Data.forEach(element => {
+                const type2option = document.createElement('option')
+                type2option.text = element.type2
+                type2option.setAttribute('value', element.type2)
+                type2select.appendChild(type2option)
+              });
+          },
+          error: function(error){
+              console.log(error)
+          }
+        })
+      })
+
+      // $("#lease_search").click(function(e){
+      //   calendar_dataget(calendar)
+      // })
+
+    })
+  </script>
+{% endblock script%}

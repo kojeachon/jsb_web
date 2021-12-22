@@ -25,7 +25,7 @@ DEBUG = env.bool("DJANGO_DEBUG", False)
 # In Windows, this must be set to your system time zone.
 TIME_ZONE = "Asia/Seoul"
 # https://docs.djangoproject.com/en/dev/ref/settings/#language-code
-LANGUAGE_CODE = "en-us"
+LANGUAGE_CODE = "ko-KR"
 # https://docs.djangoproject.com/en/dev/ref/settings/#site-id
 SITE_ID = 1
 # https://docs.djangoproject.com/en/dev/ref/settings/#use-i18n
@@ -44,19 +44,22 @@ LOCALE_PATHS = [str(ROOT_DIR / "locale")]
 # DATABASES = {
 #    "default": env.db("DATABASE_URL", default="postgres:///jsb_web"),
 # }
+
+# DATABASES = {
+#    "default": env.db("DATABASE_URL", default="sqlite:///db.sqlite"),
+# }
+
 DATABASES = {
-   "default": env.db("DATABASE_URL", default="sqlite:///db.sqlite"),
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': ROOT_DIR / 'db.sqlite3',
+    }
 }
+
 DATABASES["default"]["ATOMIC_REQUESTS"] = True
 # https://docs.djangoproject.com/en/stable/ref/settings/#std:setting-DEFAULT_AUTO_FIELD
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': ROOT_DIR / 'db.sqlite3',
-#     }
-# }
 # URLS
 # ------------------------------------------------------------------------------
 # https://docs.djangoproject.com/en/dev/ref/settings/#root-urlconf
@@ -196,6 +199,7 @@ TEMPLATES = [
                 "django.template.context_processors.static",
                 "django.template.context_processors.tz",
                 "django.contrib.messages.context_processors.messages",
+                "jsb_web.utils.context_processors.settings_context",
             ],
         },
     }
